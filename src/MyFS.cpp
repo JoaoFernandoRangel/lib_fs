@@ -97,6 +97,7 @@ void MyFS::printDir(const char *dirname, uint8_t levels) {
 }
 
 /// @brief salva em jSON os diretórios de uma pasta
+/// @attention não testado ainda
 /// @param dirname caminho do diretório
 /// @param levels quantidade de níveis que serão mostrados
 cJSON *MyFS::listDir(const char *dirname, uint8_t levels) {
@@ -121,7 +122,6 @@ cJSON *MyFS::listDir(const char *dirname, uint8_t levels) {
         cJSON *fileEntry = cJSON_CreateObject();
         cJSON_AddStringToObject(fileEntry, "name", file.name());
         cJSON_AddBoolToObject(fileEntry, "isDirectory", file.isDirectory());
-
         if (!file.isDirectory()) {
             cJSON_AddNumberToObject(fileEntry, "size", file.size());
         }
@@ -129,13 +129,11 @@ cJSON *MyFS::listDir(const char *dirname, uint8_t levels) {
         // Obtém a data/hora da última modificação
         time_t t = file.getLastWrite();
         struct tm *tmstruct = localtime(&t);
-        if (tmstruct) {
-            char lastWrite[20];
-            snprintf(lastWrite, sizeof(lastWrite), "%04d-%02d-%02d %02d:%02d:%02d", tmstruct->tm_year + 1900,
-                     tmstruct->tm_mon + 1, tmstruct->tm_mday, tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
-            cJSON_AddStringToObject(fileEntry, "lastWrite", lastWrite);
-        }
+        char lastWrite[20];
+        snprintf(lastWrite, sizeof(lastWrite), "%04d-%02d-%02d %02d:%02d:%02d", tmstruct->tm_year + 1900,
+                 tmstruct->tm_mon + 1, tmstruct->tm_mday, tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
 
+        cJSON_AddStringToObject(fileEntry, "lastWrite", lastWrite);
         cJSON_AddItemToArray(filesArray, fileEntry);
 
         file = root.openNextFile();
