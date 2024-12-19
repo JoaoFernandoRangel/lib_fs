@@ -24,6 +24,10 @@ bool MyFS::SDinit(uint8_t cs, SPIClass &com) {
     }
 }
 
+fs::FS MyFS::getFs() {
+    return fs;
+}
+
 string MyFS::readFile(const char *path, bool debug) {
     string fileContent = "";
 
