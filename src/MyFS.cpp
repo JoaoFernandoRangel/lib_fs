@@ -1,5 +1,7 @@
 #include "MyFS.h"
 
+MyFS::MyFS() {}
+
 /// @brief Inicializa LittleFS
 /// @return retorna se foi inicializado corretamente
 bool MyFS::LittleFSinit() {
@@ -22,10 +24,6 @@ bool MyFS::SDinit(uint8_t cs, SPIClass &com) {
     } else {
         return false;
     }
-}
-
-fs::FS *MyFS::getFs() {
-    return &fs;
 }
 
 string MyFS::readFile(const char *path, bool debug) {
@@ -110,11 +108,11 @@ cJSON *MyFS::listDir(const char *dirname, uint8_t levels) {
     fs::File root = fs.open(dirname);
     if (!root) {
         SERIAL_OUT.println("- failed to open directory");
-        return;
+        return rootJson;
     }
     if (!root.isDirectory()) {
         SERIAL_OUT.println(" - not a directory");
-        return;
+        return rootJson;
     }
 
     fs::File file = root.openNextFile();

@@ -19,11 +19,11 @@
 
 class MyFS {
    private:
-    fs::FS &fs;
+    fs::FS &fs = LittleFS;
 
    public:
-    // MyFS();
-    bool MyFS::LittleFSinit();
+    MyFS();
+    bool LittleFSinit();
     bool SDinit(uint8_t cs, SPIClass &com);
     string readFile(const char *path, bool debug = false);
     void printDir(const char *dirname, uint8_t levels);
@@ -34,8 +34,6 @@ class MyFS {
     int numberOfFiles(const char *path);
     File openFile(const char *filePath, bool write = false, const char *dirPath = "");
     void removeFile(const char *path);
-
-    fs::FS *getFs();
 };
 
 extern MyFS myFS;
