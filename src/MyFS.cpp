@@ -26,8 +26,8 @@ bool MyFS::SDinit(uint8_t cs, SPIClass &com) {
     }
 }
 
-stdstring MyFS::readFile(const char *path, bool debug) {
-    stdstring fileContent = "";
+std::string MyFS::readFile(const char *path, bool debug) {
+    std::string fileContent = "";
 
     fs::File file = fs.open(path);
     if (!file || file.isDirectory()) {
