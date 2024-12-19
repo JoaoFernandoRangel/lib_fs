@@ -9,7 +9,7 @@
 #include "Arduino.h"
 
 #define FORMAT_LITTLEFS_IF_FAILED true
-#define string std::string
+#define stdstring std::string
 
 #ifdef SERIAL_DEBUG
 #define SERIAL_OUT SERIAL_DEBUG
@@ -25,7 +25,7 @@ class MyFS {
     MyFS();
     bool LittleFSinit();
     bool SDinit(uint8_t cs, SPIClass &com);
-    string readFile(const char *path, bool debug = false);
+    stdstring readFile(const char *path, bool debug = false);
     void printDir(const char *dirname, uint8_t levels);
     cJSON *listDir(const char *dirname, uint8_t levels);
     cJSON *listFiles(const char *path);
