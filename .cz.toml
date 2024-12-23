@@ -1,0 +1,87 @@
+[tool.commitizen]
+name = "cz_customize"
+tag_format = "$version"
+version_scheme = "semver"
+version = "1.3.1"
+version_files = ["package.json:version", "README.md:/releases/tag/"]
+update_changelog_on_bump = false
+use_shortcuts = true
+
+[tool.commitizen.customize]
+message_template = "{{change_type}}{% if scope %}({{scope}}){% endif %}: {{message}}{% if description %}\n\n{{description}}{% endif %}{% if task %}\n\n{{task}}{% endif %}{% if is_breaking_change %}\n\nBREAKING CHANGE{% endif %}{% if add_to_changelog %}\n\nCHANGELOG{% endif %}"
+commit_parser = "^(?P<change_type>bump|feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(?:\\((?P<scope>[^)]+)\\))?: (?P<message>[^\n]+)(?:\n\n(?P<description>[^\n]+))?(?:\n\n(?P<task>[^\n]+))?(?:\n\n(?P<breaking_change>BREAKING CHANGE))?(?:\n\n(?P<changelog>CHANGELOG))"
+
+example = "feat: this feature enables customization through config file"
+
+schema = "<change_type>(<scope>): <message>\n\n<description>\n\n<task>\n\nBREAKING CHANGE\n\nCHANGELOG"
+schema_pattern = "^(?P<change_type>bump|feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(?:\\((?P<scope>[^)]+)\\))?: (?P<message>[^\n]+)(?:\n\n(?P<description>[^\n]+))?(?:\n\n(?P<task>[^\n]+))?(?:\n\n(?P<breaking_change>BREAKING CHANGE))?(?:\n\n(?P<changelog>CHANGELOG))?"
+
+bump_pattern = "(^(feat|fix|perf)(?:\\((?P<scope>[^)]+)\\))?: (?:[^\n]+)(?:\n\n(?:[^\n]+))?(?:\n\n(?:[^\n]+))?(?:\n\n(?:BREAKING CHANGE))?(?:\n\n(?:CHANGELOG))?|BREAKING CHANGE)"
+bump_map = { "BREAKING CHANGE" = "MAJOR", "feat" = "MINOR", "fix" = "PATCH", "perf" = "PATCH" }
+
+changelog_pattern = "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)?(!)?"
+change_type_map = { "feat" = "Feat", "fix" = "Fix", "docs" = "Docs", "style" = "Style", "refactor" = "Refactor", "perf" = "Perf", "test" = "Test", "build" = "Build", "ci" = "CI", "chore" = "Chore" }
+change_type_order = [
+    "BREAKING CHANGE",
+    "feat",
+    "fix",
+    "docs",
+    "style",
+    "refactor",
+    "perf",
+    "test",
+    "build",
+    "ci",
+    "chore",
+    "revert",
+]
+
+[[tool.commitizen.customize.questions]]
+type = "list"
+name = "change_type"
+choices = [
+    { value = "feat", name = "feat: A new feature", key = "e" },
+    { value = "fix", name = "fix: A bug fix", key = "f" },
+    { value = "docs", name = "docs: Documentation changes", key = "d" },
+    { value = "style", name = "style: Code style changes (white-space, formatting, etc.)", key = "s" },
+    { value = "refactor", name = "refactor: Code changes that neither fix a bug nor add a feature", key = "r" },
+    { value = "perf", name = "perf: Performance improvements", key = "p" },
+    { value = "test", name = "test: Adding or correcting tests", key = "t" },
+    { value = "build", name = "build: Changes affecting the build system or external dependencies", key = "b" },
+    { value = "ci", name = "ci: Changes to CI configuration files and scripts", key = "c" },
+    { value = "chore", name = "chore: Other changes that don't modify src or test files", key = "h" },
+    { value = "revert", name = "revert: Reverting a previous commit", key = "v" },
+]
+message = "Select the type of change you are committing"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "scope"
+message = "Scope: (press [enter] to skip)"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "message"
+message = "Message:"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "description"
+message = "Description: (press [enter] to skip)"
+
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "task"
+message = "Task: (press [enter] to skip)"
+
+[[tool.commitizen.customize.questions]]
+type = "confirm"
+name = "is_breaking_change"
+message = "Is this a breaking change? (default 'No')"
+default = false
+
+[[tool.commitizen.customize.questions]]
+type = "confirm"
+name = "add_to_changelog"
+message = "Add to changelog? (default 'No')"
+default = false

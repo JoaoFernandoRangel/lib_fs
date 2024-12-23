@@ -1,12 +1,11 @@
 #ifndef MYFS_H
 #define MYFS_H
 
+#include <Arduino.h>
 #include <FS.h>
 #include <LittleFS.h>
 #include <SD.h>
 #include <cJSON.h>
-
-#include "Arduino.h"
 
 
 #define FORMAT_LITTLEFS_IF_FAILED true
