@@ -1,21 +1,27 @@
 {
-    "name": "myFS",
-    "version": "0.1.0",
-    "description": "biblioteca para gerenciar arquivos com o LittleFS",
-    "keywords": ["LittleFS", "ESP32"],
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/mateusrsg/myFS.git",
-      "ssh": "git@github.com:mateusrsg/myFS.git"
-    },
-    "authors": [
-      {
-        "name": "Mateus Gaudio",
-        "email": "mateus.gaudio@2solve.com",
-        "maintainer": true
-      }
-    ],
-    "frameworks": ["arduino"],
-    "platforms": ["espressif32"]
-  }
-  
+  "name": "myFS",
+  "version": "0.1.0",
+  "description": "biblioteca para gerenciar arquivos com o LittleFS",
+  "keywords": [
+    "LittleFS",
+    "ESP32"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/2solve/firmware_lib-my-fs.git",
+    "ssh": "git@github.com:2solve/firmware_lib-my-fs.git"
+  },
+  "authors": [
+    {
+      "name": "Mateus Gaudio",
+      "email": "mateus.gaudio@2solve.com",
+      "maintainer": true
+    }
+  ],
+  "frameworks": [
+    "arduino"
+  ],
+  "platforms": [
+    "espressif32"
+  ]
+}
