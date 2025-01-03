@@ -71,9 +71,9 @@ void MyFS::printDir(const char *dirname, uint8_t levels) {
             SERIAL_OUT.print(file.name());
             time_t t = file.getLastWrite();
             struct tm *tmstruct = localtime(&t);
-            SERIAL_OUT.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900,
-                              (tmstruct->tm_mon) + 1, tmstruct->tm_mday, tmstruct->tm_hour, tmstruct->tm_min,
-                              tmstruct->tm_sec);
+            SERIAL_OUT.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n",
+                              (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday,
+                              tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
 
             if (levels) {
                 printDir(file.name(), levels - 1);
@@ -86,9 +86,9 @@ void MyFS::printDir(const char *dirname, uint8_t levels) {
             SERIAL_OUT.print(file.size());
             time_t t = file.getLastWrite();
             struct tm *tmstruct = localtime(&t);
-            SERIAL_OUT.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900,
-                              (tmstruct->tm_mon) + 1, tmstruct->tm_mday, tmstruct->tm_hour, tmstruct->tm_min,
-                              tmstruct->tm_sec);
+            SERIAL_OUT.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n",
+                              (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday,
+                              tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
         }
         file = root.openNextFile();
     }
@@ -128,8 +128,9 @@ cJSON *MyFS::listDir(const char *dirname, uint8_t levels) {
         time_t t = file.getLastWrite();
         struct tm *tmstruct = localtime(&t);
         char lastWrite[20];
-        snprintf(lastWrite, sizeof(lastWrite), "%04d-%02d-%02d %02d:%02d:%02d", tmstruct->tm_year + 1900,
-                 tmstruct->tm_mon + 1, tmstruct->tm_mday, tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
+        snprintf(lastWrite, sizeof(lastWrite), "%04d-%02d-%02d %02d:%02d:%02d",
+                 tmstruct->tm_year + 1900, tmstruct->tm_mon + 1, tmstruct->tm_mday,
+                 tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
 
         cJSON_AddStringToObject(fileEntry, "lastWrite", lastWrite);
         cJSON_AddItemToArray(filesArray, fileEntry);
@@ -232,7 +233,6 @@ bool MyFS::writeFile(const char *path, const char *content, bool create) {
 /// @attention Não abre nem fecha o arquivo 'file'
 /// @param file ponteiro para o arquivo
 /// @param message texto string para ser gravado
-/// @param create indica se é um novo arquivo [default = false]
 bool MyFS::writeFile(File file, const char *message) {
     if (!file) {
         SERIAL_OUT.println("- failed to open file for writing");
@@ -250,7 +250,8 @@ bool MyFS::writeFile(File file, const char *message) {
 /// @brief Cria um diretório
 /// @attention deve fechar o arquivo depois
 /// @param filePath caminho do arquivo de retorno
-/// @param write define o modo de abertura [true - WRITE, false - READ], e se o diretório/arquivo será criado
+/// @param write define o modo de abertura [true - WRITE, false - READ], e se o diretório/arquivo
+/// será criado
 /// @param dirPath caminho do diretório que será criado
 File MyFS::openFile(const char *filePath, bool write, const char *dirPath) {
     // cria diretório se necessário

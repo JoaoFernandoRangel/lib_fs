@@ -2,3 +2,5 @@
 .platformio.ini
 .vscode
 .clang-format
+.cz.toml
+platformio.ini
