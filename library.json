@@ -1,5 +1,5 @@
 {
-  "name": "myFS",
+  "name": "MyFS",
   "version": "0.1.0",
   "description": "biblioteca para gerenciar arquivos com o LittleFS",
   "keywords": [
