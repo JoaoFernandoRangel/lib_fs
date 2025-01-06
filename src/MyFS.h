@@ -7,7 +7,6 @@
 #include <SD.h>
 #include <cJSON.h>
 
-
 #define FORMAT_LITTLEFS_IF_FAILED true
 
 #ifdef SERIAL_DEBUG
@@ -17,22 +16,24 @@
 #endif
 
 class MyFS {
-   private:
-    fs::FS &fs = LittleFS;
+private:
+  fs::FS &fs = LittleFS;
 
-   public:
-    MyFS();
-    bool LittleFSinit();
-    bool SDinit(uint8_t cs, SPIClass &com);
-    std::string readFile(const char *path, bool debug = false);
-    void printDir(const char *dirname, uint8_t levels);
-    cJSON *listDir(const char *dirname, uint8_t levels);
-    cJSON *listFiles(const char *path);
-    bool writeFile(const char *path, const char *message, bool create = false);
-    bool writeFile(File file, const char *message);
-    int numberOfFiles(const char *path);
-    File openFile(const char *filePath, bool write = false, const char *dirPath = "");
-    void removeFile(const char *path);
+public:
+  MyFS();
+  bool begin();
+  bool LittleFSinit();
+  bool SDinit(uint8_t cs, SPIClass &com);
+  std::string readFile(const char *path, bool debug = false);
+  void printDir(const char *dirname, uint8_t levels);
+  cJSON *listDir(const char *dirname, uint8_t levels);
+  cJSON *listFiles(const char *path);
+  bool writeFile(const char *path, const char *message, bool create = false);
+  bool writeFile(File file, const char *message);
+  int numberOfFiles(const char *path);
+  File openFile(const char *filePath, bool write = false,
+                const char *dirPath = "");
+  void removeFile(const char *path);
 };
 
 extern MyFS myFS;
