@@ -257,25 +257,31 @@ bool MyFS::writeFile(File file, const char *message) {
 /// @brief Cria um diretório
 /// @attention deve fechar o arquivo depois
 /// @param filePath caminho do arquivo de retorno
-/// @param write define o modo de abertura [true - WRITE, false - READ], e se o
-/// diretório/arquivo será criado
+/// @param write modo de abertura [true - CREATE AND WRITE, false - ONLY READ]
 /// @param dirPath caminho do diretório que será criado
 File MyFS::openFile(const char *filePath, bool write, const char *dirPath) {
-  // cria diretório se necessário
   if (write) {
-    if (!fs.exists(dirPath)) {
-      if (fs.mkdir(dirPath)) {
-        SERIAL_OUT.print("Dir created: ");
-        SERIAL_OUT.println(filePath);
-      } else {
-        SERIAL_OUT.println("mkdir failed");
-      }
-    }
-
+    createDir(dirPath);
     return fs.open(filePath, FILE_WRITE, true);
-    // somente abre o arquivo
   } else {
     return fs.open(filePath, FILE_READ);
+  }
+}
+
+/// @brief Cria o diretório no caminho path
+/// @param path caminho do diretório
+/// @return retorna se true se a pasta foi criada ou se já existe
+bool MyFS::createDir(const char *path) {
+  if (fs.exists(path)) {
+    return true;
+  }
+
+  if (fs.mkdir(path)) {
+    SERIAL_OUT.printf("Dir created: %s\n", path);
+    return true;
+  } else {
+    SERIAL_OUT.println("mkdir failed");
+    return false;
   }
 }
 

@@ -34,6 +34,7 @@ public:
   File openFile(const char *filePath, bool write = false,
                 const char *dirPath = "");
   void removeFile(const char *path);
+  bool createDir(const char *path);
 };
 
 extern MyFS myFS;
