@@ -31,3 +31,17 @@ A biblioteca é baseada no LittleFS e precisa que esse sistema de arquivos seja 
 ```ini
 board_build.filesystem = littlefs
 ```
+
+## Ferramente de Download de FS da ESP32
+
+O FileSystem dentro da Flash do ESP32 pode ser lido dentro do Platformio por meio de um script python do projeto [pio-esp32-esp8266-filesystem-downloader](https://github.com/maxgerhardt/pio-esp32-esp8266-filesystem-downloader). </br>
+Para usar o script:
+1. Baixe o script `download_fs.py` dentro do [repositório acima](https://github.com/maxgerhardt/pio-esp32-esp8266-filesystem-downloader)
+2. Mova para o diretório raiz do seu projeto no Platformio
+3. Inclua no script `platformio.ini` o parâmetro:
+   ```ini
+   extra_scripts = download_fs.py
+   ```
+5. Reinicie o VSCode
+6. Dentro da barra de Ferramentas do Platformio, na aba de Tarefas de Projeto, haverá um seção `Custom`, com a opção `Download Filesystem`: </br> ![Botão do Script](https://github.com/maxgerhardt/pio-esp32-esp8266-filesystem-downloader/blob/main/project_task.png)
+7. Clique em `Download Filesystem` para baixar arquivos da Flash, prezervando a estrutura de arquivos e diretórios presente, dentro da pasta `unpacked_fs` (diretório pode ser configurado, olhar instruções no projeto).
