@@ -285,4 +285,18 @@ bool MyFS::createDir(const char *path) {
   }
 }
 
+/// @brief Retorna a quantidade de bytes total na memória flash
+/// @warning Somente LittleFS
+uint MyFS::getTotalBytes() { return LittleFS.totalBytes(); }
+
+/// @brief Retorna a quantidade de bytes usados na memória flash
+/// @warning Somente LittleFS
+uint MyFS::getUsedBytes() { return LittleFS.usedBytes(); }
+
+/// @brief Retorna a quantidade de bytes livres na memória flash
+/// @warning Somente LittleFS
+uint MyFS::getFreeBytes() {
+  return (LittleFS.totalBytes() - LittleFS.usedBytes());
+}
+
 MyFS myFS;

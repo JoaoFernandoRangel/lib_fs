@@ -35,6 +35,9 @@ public:
                 const char *dirPath = "");
   void removeFile(const char *path);
   bool createDir(const char *path);
+  uint getTotalBytes();
+  uint getUsedBytes();
+  uint getFreeBytes();
 };
 
 extern MyFS myFS;
