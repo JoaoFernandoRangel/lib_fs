@@ -1,6 +1,7 @@
 #ifndef MYFS_H
 #define MYFS_H
 
+#include <conf.h>
 #include <Arduino.h>
 #include <FS.h>
 #include <LittleFS.h>
