@@ -15,12 +15,12 @@
 #define SERIAL_OUT Serial0
 #endif
 
-class MyFS {
+class tosolve_myFS {
 private:
   fs::FS &fs = LittleFS;
 
 public:
-  MyFS();
+  tosolve_myFS();
   bool begin();
   bool LittleFSinit();
   bool SDinit(uint8_t cs, SPIClass &com);
@@ -40,6 +40,6 @@ public:
   uint getFreeBytes();
 };
 
-extern MyFS myFS;
+extern tosolve_myFS myFS;
 
 #endif // MYFS_H
