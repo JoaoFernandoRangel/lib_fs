@@ -1,104 +1,123 @@
-#include "tosolve_myFs.h"
+#include "tosolve_myfs.h"
 
 tosolve_myFS::tosolve_myFS() {}
 
 /// @brief Inicializa LittleFS
 /// @return retorna se foi inicializado corretamente
 bool tosolve_myFS::begin() {
-  if (LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)) {
-    fs = LittleFS;
-    return true;
-  } else {
-    return false;
-  }
+    if (LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)) {
+        fs = LittleFS;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 /// @brief Inicializa LittleFS
 /// @note faz o mesmo que myFS.begin()
 /// @return retorna se foi inicializado corretamente
-bool tosolve_myFS::LittleFSinit() { return begin(); }
+bool tosolve_myFS::LittleFSinit() {
+    return begin();
+}
 
 /// @brief Inicializa SD card
 /// @param cs Número do Chip select
 /// @param com configuração SPI
 /// @return retorna se o SD está montado no sistema
 bool tosolve_myFS::SDinit(uint8_t cs, SPIClass &com) {
-  if (SD.begin(cs, com)) {
-    fs = SD;
-    return true;
-  } else {
-    return false;
-  }
+    if (SD.begin(cs, com)) {
+        fs = SD;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 std::string tosolve_myFS::readFile(const char *path, bool debug) {
-  std::string fileContent = "";
+    std::string fileContent = "";
 
-  fs::File file = fs.open(path);
-  if (!file || file.isDirectory()) {
-    SERIAL_OUT.println("\n- failed to open file for reading\n");
+    fs::File file = fs.open(path);
+    if (!file || file.isDirectory()) {
+        SERIAL_OUT.println("\n- failed to open file for reading\n");
+        return fileContent;
+    }
+    while (file.available()) {
+        char c = file.read();
+        fileContent += c;
+    }
+
+    file.close();
+
+    if (debug) {
+        SERIAL_OUT.println(fileContent.c_str());
+    }
     return fileContent;
-  }
-  while (file.available()) {
-    char c = file.read();
-    fileContent += c;
-  }
+}
 
-  file.close();
+/// @brief Lê o conteúdo de um arquivo
+/// @attention Não fecha o arquivo 'file'
+/// @param file ponteiro para o arquivo
+std::string tosolve_myFS::readFile(fs::File file, bool debug) {
+    std::string fileContent = "";
 
-  if (debug) {
-    SERIAL_OUT.println(fileContent.c_str());
-  }
-  return fileContent;
+    if (!file || file.isDirectory()) {
+        SERIAL_OUT.println("\n- failed to open file for reading\n");
+        return fileContent;
+    }
+    while (file.available()) {
+        char c = file.read();
+        fileContent += c;
+    }
+
+    if (debug) {
+        SERIAL_OUT.println(fileContent.c_str());
+    }
+    return fileContent;
 }
 
 /// @brief imprime na tela os diretórios de uma pasta
 /// @param dirname caminho do diretório
 /// @param levels quantidade de níveis que serão mostrados
 void tosolve_myFS::printDir(const char *dirname, uint8_t levels) {
-  SERIAL_OUT.printf("Listing directory: %s\r\n", dirname);
+    SERIAL_OUT.printf("Listing directory: %s\r\n", dirname);
 
-  fs::File root = fs.open(dirname);
-  if (!root) {
-    SERIAL_OUT.println("- failed to open directory");
-    return;
-  }
-  if (!root.isDirectory()) {
-    SERIAL_OUT.println(" - not a directory");
-    return;
-  }
-
-  fs::File file = root.openNextFile();
-  while (file) {
-    if (file.isDirectory()) {
-      SERIAL_OUT.print("  DIR : ");
-
-      SERIAL_OUT.print(file.name());
-      time_t t = file.getLastWrite();
-      struct tm *tmstruct = localtime(&t);
-      SERIAL_OUT.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n",
-                        (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1,
-                        tmstruct->tm_mday, tmstruct->tm_hour, tmstruct->tm_min,
-                        tmstruct->tm_sec);
-
-      if (levels) {
-        printDir(file.name(), levels - 1);
-      }
-    } else {
-      SERIAL_OUT.print("  FILE: ");
-      SERIAL_OUT.print(file.name());
-      SERIAL_OUT.print("  SIZE: ");
-
-      SERIAL_OUT.print(file.size());
-      time_t t = file.getLastWrite();
-      struct tm *tmstruct = localtime(&t);
-      SERIAL_OUT.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n",
-                        (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1,
-                        tmstruct->tm_mday, tmstruct->tm_hour, tmstruct->tm_min,
-                        tmstruct->tm_sec);
+    fs::File root = fs.open(dirname);
+    if (!root) {
+        SERIAL_OUT.println("- failed to open directory");
+        return;
     }
-    file = root.openNextFile();
-  }
+    if (!root.isDirectory()) {
+        SERIAL_OUT.println(" - not a directory");
+        return;
+    }
+
+    fs::File file = root.openNextFile();
+    while (file) {
+        if (file.isDirectory()) {
+            SERIAL_OUT.print("  DIR : ");
+
+            SERIAL_OUT.print(file.name());
+            time_t t = file.getLastWrite();
+            struct tm *tmstruct = localtime(&t);
+            SERIAL_OUT.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday,
+                              tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
+
+            if (levels) {
+                printDir(file.name(), levels - 1);
+            }
+        } else {
+            SERIAL_OUT.print("  FILE: ");
+            SERIAL_OUT.print(file.name());
+            SERIAL_OUT.print("  SIZE: ");
+
+            SERIAL_OUT.print(file.size());
+            time_t t = file.getLastWrite();
+            struct tm *tmstruct = localtime(&t);
+            SERIAL_OUT.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday,
+                              tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
+        }
+        file = root.openNextFile();
+    }
 }
 
 /// @brief salva em jSON os diretórios de uma pasta
@@ -106,135 +125,133 @@ void tosolve_myFS::printDir(const char *dirname, uint8_t levels) {
 /// @param dirname caminho do diretório
 /// @param levels quantidade de níveis que serão mostrados
 cJSON *tosolve_myFS::listDir(const char *dirname, uint8_t levels) {
-  // Cria o objeto JSON raiz
-  cJSON *rootJson = cJSON_CreateObject();
-  cJSON *filesArray = cJSON_CreateArray();
-  cJSON_AddStringToObject(rootJson, "directory", dirname);
-  cJSON_AddItemToObject(rootJson, "contents", filesArray);
+    // Cria o objeto JSON raiz
+    cJSON *rootJson = cJSON_CreateObject();
+    cJSON *filesArray = cJSON_CreateArray();
+    cJSON_AddStringToObject(rootJson, "directory", dirname);
+    cJSON_AddItemToObject(rootJson, "contents", filesArray);
 
-  fs::File root = fs.open(dirname);
-  if (!root) {
-    SERIAL_OUT.println("- failed to open directory");
-    return rootJson;
-  }
-  if (!root.isDirectory()) {
-    SERIAL_OUT.println(" - not a directory");
-    return rootJson;
-  }
-
-  fs::File file = root.openNextFile();
-  while (file) {
-    cJSON *fileEntry = cJSON_CreateObject();
-    cJSON_AddStringToObject(fileEntry, "name", file.name());
-    cJSON_AddBoolToObject(fileEntry, "isDirectory", file.isDirectory());
-    if (!file.isDirectory()) {
-      cJSON_AddNumberToObject(fileEntry, "size", file.size());
+    fs::File root = fs.open(dirname);
+    if (!root) {
+        SERIAL_OUT.println("- failed to open directory");
+        return rootJson;
+    }
+    if (!root.isDirectory()) {
+        SERIAL_OUT.println(" - not a directory");
+        return rootJson;
     }
 
-    // Obtém a data/hora da última modificação
-    time_t t = file.getLastWrite();
-    struct tm *tmstruct = localtime(&t);
-    char lastWrite[20];
-    snprintf(lastWrite, sizeof(lastWrite), "%04d-%02d-%02d %02d:%02d:%02d",
-             tmstruct->tm_year + 1900, tmstruct->tm_mon + 1, tmstruct->tm_mday,
-             tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
+    fs::File file = root.openNextFile();
+    while (file) {
+        cJSON *fileEntry = cJSON_CreateObject();
+        cJSON_AddStringToObject(fileEntry, "name", file.name());
+        cJSON_AddBoolToObject(fileEntry, "isDirectory", file.isDirectory());
+        if (!file.isDirectory()) {
+            cJSON_AddNumberToObject(fileEntry, "size", file.size());
+        }
 
-    cJSON_AddStringToObject(fileEntry, "lastWrite", lastWrite);
-    cJSON_AddItemToArray(filesArray, fileEntry);
+        // Obtém a data/hora da última modificação
+        time_t t = file.getLastWrite();
+        struct tm *tmstruct = localtime(&t);
+        char lastWrite[20];
+        snprintf(lastWrite, sizeof(lastWrite), "%04d-%02d-%02d %02d:%02d:%02d", tmstruct->tm_year + 1900, tmstruct->tm_mon + 1, tmstruct->tm_mday,
+                 tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
 
-    file = root.openNextFile();
-  }
+        cJSON_AddStringToObject(fileEntry, "lastWrite", lastWrite);
+        cJSON_AddItemToArray(filesArray, fileEntry);
 
-  return rootJson;
+        file = root.openNextFile();
+    }
+
+    return rootJson;
 }
 
 /// @brief deletes files of path folder
 /// @param path caminho do arquivo ou diretório [deleta todos os arquivos]
 void tosolve_myFS::removeFile(const char *path) {
-  // Verifica se o caminho fornecido é válido
-  fs::File rootDir = openFile(path, path);
+    // Verifica se o caminho fornecido é válido
+    fs::File rootDir = openFile(path, path);
 
-  // Se for pasta
-  if (rootDir && rootDir.isDirectory()) {
-    // Lista os arquivos no diretório
-    fs::File file = rootDir.openNextFile();
-    while (file) {
-      if (!file.isDirectory()) {
-        fs.remove(file.path());
-      }
-      file = rootDir.openNextFile();
+    // Se for pasta
+    if (rootDir && rootDir.isDirectory()) {
+        // Lista os arquivos no diretório
+        fs::File file = rootDir.openNextFile();
+        while (file) {
+            if (!file.isDirectory()) {
+                fs.remove(file.path());
+            }
+            file = rootDir.openNextFile();
+        }
+        // Se for arquivo
+    } else if (rootDir) {
+        fs.remove(rootDir.path());
     }
-    // Se for arquivo
-  } else if (rootDir) {
-    fs.remove(rootDir.path());
-  }
 }
 
 /// @brief Lista arquivos do diretório
 /// @param path caminho do diretório
 cJSON *tosolve_myFS::listFiles(const char *path) { // Cria o objeto JSON
-  cJSON *root = cJSON_CreateObject();
-  cJSON *files = cJSON_CreateArray();
-  cJSON_AddItemToObject(root, "files", files);
+    cJSON *root = cJSON_CreateObject();
+    cJSON *files = cJSON_CreateArray();
+    cJSON_AddItemToObject(root, "files", files);
 
-  // Verifica se o caminho fornecido é válido
-  fs::File rootDir = fs.open(path);
-  if (rootDir && rootDir.isDirectory()) {
-    // Lista os arquivos no diretório
-    fs::File file = rootDir.openNextFile();
-    while (file) {
-      if (!file.isDirectory()) {
-        cJSON_AddItemToArray(files, cJSON_CreateString(file.name()));
-      }
-      file = rootDir.openNextFile();
+    // Verifica se o caminho fornecido é válido
+    fs::File rootDir = fs.open(path);
+    if (rootDir && rootDir.isDirectory()) {
+        // Lista os arquivos no diretório
+        fs::File file = rootDir.openNextFile();
+        while (file) {
+            if (!file.isDirectory()) {
+                cJSON_AddItemToArray(files, cJSON_CreateString(file.name()));
+            }
+            file = rootDir.openNextFile();
+        }
     }
-  }
 
-  return root;
+    return root;
 }
 
 /// @brief counts how many logs were saved
 /// @param path path to archives directory
 /// @return int, number of files
 int tosolve_myFS::numberOfFiles(const char *path) {
-  int num = 0;
+    int num = 0;
 
-  // Verifica se o caminho fornecido é válido
-  fs::File rootDir = openFile(path, true, path);
-  if (rootDir && rootDir.isDirectory()) {
-    // Lista os arquivos no diretório
-    fs::File file = rootDir.openNextFile();
-    while (file) {
-      if (!file.isDirectory()) {
-        num++;
-      }
-      file = rootDir.openNextFile();
+    // Verifica se o caminho fornecido é válido
+    fs::File rootDir = openFile(path, true, path);
+    if (rootDir && rootDir.isDirectory()) {
+        // Lista os arquivos no diretório
+        fs::File file = rootDir.openNextFile();
+        while (file) {
+            if (!file.isDirectory()) {
+                num++;
+            }
+            file = rootDir.openNextFile();
+        }
+    } else {
+        return 0;
     }
-  } else {
-    return 0;
-  }
-  return num;
+    return num;
 }
 
 /// @brief Grava string em um arquivo
 /// @param path caminho do diretório
 /// @param content texto string para ser gravado
 /// @param create indica se é um novo arquivo [default = false]
-bool tosolve_myFS::writeFile(const char *path, const char *content,
-                             bool create) {
-  fs::File file = fs.open(path, "w", create);
-  if (!file) {
-    // SERIAL_OUT.println("- failed to open file for writing");
-    return false;
-  }
-  if (file.print(content)) {
-    // SERIAL_OUT.println("- file written");
-    return true;
-  } else {
-    // SERIAL_OUT.println("- write failed");
-    return false;
-  }
-  file.close();
+bool tosolve_myFS::writeFile(const char *path, const char *content, bool create) {
+    fs::File file = fs.open(path, "w", create);
+    if (!file) {
+        // SERIAL_OUT.println("- failed to open file for writing");
+        return false;
+    }
+    if (file.print(content)) {
+        // SERIAL_OUT.println("- file written");
+        return true;
+    } else {
+        // SERIAL_OUT.println("- write failed");
+        return false;
+    }
+    file.close();
 }
 
 /// @brief Grava string em um arquivo
@@ -242,17 +259,17 @@ bool tosolve_myFS::writeFile(const char *path, const char *content,
 /// @param file ponteiro para o arquivo
 /// @param message texto string para ser gravado
 bool tosolve_myFS::writeFile(File file, const char *message) {
-  if (!file) {
-    SERIAL_OUT.println("- failed to open file for writing");
-    return false;
-  }
-  if (file.print(message)) {
-    // SERIAL_OUT.println("- file written");
-    return true;
-  } else {
-    SERIAL_OUT.println("- write failed");
-    return false;
-  }
+    if (!file) {
+        SERIAL_OUT.println("- failed to open file for writing");
+        return false;
+    }
+    if (file.print(message)) {
+        // SERIAL_OUT.println("- file written");
+        return true;
+    } else {
+        SERIAL_OUT.println("- write failed");
+        return false;
+    }
 }
 
 /// @brief Cria um diretório
@@ -260,45 +277,48 @@ bool tosolve_myFS::writeFile(File file, const char *message) {
 /// @param filePath caminho do arquivo de retorno
 /// @param write modo de abertura [true - CREATE AND WRITE, false - ONLY READ]
 /// @param dirPath caminho do diretório que será criado
-File tosolve_myFS::openFile(const char *filePath, bool write,
-                            const char *dirPath) {
-  if (write) {
-    createDir(dirPath);
-    return fs.open(filePath, FILE_WRITE, true);
-  } else {
-    return fs.open(filePath, FILE_READ);
-  }
+File tosolve_myFS::openFile(const char *filePath, bool write, const char *dirPath) {
+    if (write) {
+        if (strcmp(dirPath, "") != 0) createDir(dirPath);
+        return fs.open(filePath, FILE_WRITE, true);
+    } else {
+        return fs.open(filePath, FILE_READ);
+    }
 }
 
 /// @brief Cria o diretório no caminho path
 /// @param path caminho do diretório
 /// @return retorna se true se a pasta foi criada ou se já existe
 bool tosolve_myFS::createDir(const char *path) {
-  if (fs.exists(path)) {
-    return true;
-  }
+    if (fs.exists(path)) {
+        return true;
+    }
 
-  if (fs.mkdir(path)) {
-    SERIAL_OUT.printf("Dir created: %s\n", path);
-    return true;
-  } else {
-    SERIAL_OUT.println("mkdir failed");
-    return false;
-  }
+    if (fs.mkdir(path)) {
+        SERIAL_OUT.printf("Dir created: %s\n", path);
+        return true;
+    } else {
+        SERIAL_OUT.println("mkdir failed");
+        return false;
+    }
 }
 
 /// @brief Retorna a quantidade de bytes total na memória flash
 /// @warning Somente LittleFS
-uint tosolve_myFS::getTotalBytes() { return LittleFS.totalBytes(); }
+uint tosolve_myFS::getTotalBytes() {
+    return LittleFS.totalBytes();
+}
 
 /// @brief Retorna a quantidade de bytes usados na memória flash
 /// @warning Somente LittleFS
-uint tosolve_myFS::getUsedBytes() { return LittleFS.usedBytes(); }
+uint tosolve_myFS::getUsedBytes() {
+    return LittleFS.usedBytes();
+}
 
 /// @brief Retorna a quantidade de bytes livres na memória flash
 /// @warning Somente LittleFS
 uint tosolve_myFS::getFreeBytes() {
-  return (LittleFS.totalBytes() - LittleFS.usedBytes());
+    return (LittleFS.totalBytes() - LittleFS.usedBytes());
 }
 
 tosolve_myFS myFS;

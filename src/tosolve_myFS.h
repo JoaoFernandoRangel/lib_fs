@@ -17,28 +17,28 @@
 #endif
 
 class tosolve_myFS {
-private:
-  fs::FS &fs = LittleFS;
+   private:
+    fs::FS &fs = LittleFS;
 
-public:
-  tosolve_myFS();
-  bool begin();
-  bool LittleFSinit();
-  bool SDinit(uint8_t cs, SPIClass &com);
-  std::string readFile(const char *path, bool debug = false);
-  void printDir(const char *dirname, uint8_t levels);
-  cJSON *listDir(const char *dirname, uint8_t levels);
-  cJSON *listFiles(const char *path);
-  bool writeFile(const char *path, const char *message, bool create = false);
-  bool writeFile(File file, const char *message);
-  int numberOfFiles(const char *path);
-  File openFile(const char *filePath, bool write = false,
-                const char *dirPath = "");
-  void removeFile(const char *path);
-  bool createDir(const char *path);
-  uint getTotalBytes();
-  uint getUsedBytes();
-  uint getFreeBytes();
+   public:
+    tosolve_myFS();
+    bool begin();
+    bool LittleFSinit();
+    bool SDinit(uint8_t cs, SPIClass &com);
+    std::string readFile(const char *path, bool debug = false);
+    std::string readFile(fs::File file, bool debug = false);
+    void printDir(const char *dirname, uint8_t levels);
+    cJSON *listDir(const char *dirname, uint8_t levels);
+    cJSON *listFiles(const char *path);
+    bool writeFile(const char *path, const char *message, bool create = false);
+    bool writeFile(File file, const char *message);
+    int numberOfFiles(const char *path);
+    File openFile(const char *filePath, bool write = false, const char *dirPath = "");
+    void removeFile(const char *path);
+    bool createDir(const char *path);
+    uint getTotalBytes();
+    uint getUsedBytes();
+    uint getFreeBytes();
 };
 
 extern tosolve_myFS myFS;
