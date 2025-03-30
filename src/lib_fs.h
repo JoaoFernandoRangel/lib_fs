@@ -10,18 +10,13 @@
 
 #define FORMAT_LITTLEFS_IF_FAILED true
 
-#ifdef SERIAL_DEBUG
-#define SERIAL_OUT SERIAL_DEBUG
-#else
-#define SERIAL_OUT Serial0
-#endif
 
-class tosolve_myFS {
+class lib_fs {
    private:
     fs::FS &fs = LittleFS;
 
    public:
-    tosolve_myFS();
+    lib_fs();
     bool begin();
     bool LittleFSinit();
     bool SDinit(uint8_t cs, SPIClass &com);
@@ -41,6 +36,6 @@ class tosolve_myFS {
     uint getFreeBytes();
 };
 
-extern tosolve_myFS myFS;
+extern lib_fs myFS;
 
 #endif // MYFS_H

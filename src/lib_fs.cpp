@@ -1,10 +1,10 @@
-#include "tosolve_myfs.h"
+#include "lib_fs.h"
 
-tosolve_myFS::tosolve_myFS() {}
+lib_fs::lib_fs() {}
 
 /// @brief Inicializa LittleFS
 /// @return retorna se foi inicializado corretamente
-bool tosolve_myFS::begin() {
+bool lib_fs::begin() {
     if (LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED)) {
         fs = LittleFS;
         return true;
@@ -16,7 +16,7 @@ bool tosolve_myFS::begin() {
 /// @brief Inicializa LittleFS
 /// @note faz o mesmo que myFS.begin()
 /// @return retorna se foi inicializado corretamente
-bool tosolve_myFS::LittleFSinit() {
+bool lib_fs::LittleFSinit() {
     return begin();
 }
 
@@ -24,7 +24,7 @@ bool tosolve_myFS::LittleFSinit() {
 /// @param cs Número do Chip select
 /// @param com configuração SPI
 /// @return retorna se o SD está montado no sistema
-bool tosolve_myFS::SDinit(uint8_t cs, SPIClass &com) {
+bool lib_fs::SDinit(uint8_t cs, SPIClass &com) {
     if (SD.begin(cs, com)) {
         fs = SD;
         return true;
@@ -33,7 +33,7 @@ bool tosolve_myFS::SDinit(uint8_t cs, SPIClass &com) {
     }
 }
 
-std::string tosolve_myFS::readFile(const char *path, bool debug) {
+std::string lib_fs::readFile(const char *path, bool debug) {
     std::string fileContent = "";
 
     fs::File file = fs.open(path);
@@ -57,7 +57,7 @@ std::string tosolve_myFS::readFile(const char *path, bool debug) {
 /// @brief Lê o conteúdo de um arquivo
 /// @attention Não fecha o arquivo 'file'
 /// @param file ponteiro para o arquivo
-std::string tosolve_myFS::readFile(fs::File file, bool debug) {
+std::string lib_fs::readFile(fs::File file, bool debug) {
     std::string fileContent = "";
 
     if (!file || file.isDirectory()) {
@@ -78,7 +78,7 @@ std::string tosolve_myFS::readFile(fs::File file, bool debug) {
 /// @brief imprime na tela os diretórios de uma pasta
 /// @param dirname caminho do diretório
 /// @param levels quantidade de níveis que serão mostrados
-void tosolve_myFS::printDir(const char *dirname, uint8_t levels) {
+void lib_fs::printDir(const char *dirname, uint8_t levels) {
     SERIAL_OUT.printf("Listing directory: %s\r\n", dirname);
 
     fs::File root = fs.open(dirname);
@@ -124,7 +124,7 @@ void tosolve_myFS::printDir(const char *dirname, uint8_t levels) {
 /// @attention não testado ainda
 /// @param dirname caminho do diretório
 /// @param levels quantidade de níveis que serão mostrados
-cJSON *tosolve_myFS::listDir(const char *dirname, uint8_t levels) {
+cJSON *lib_fs::listDir(const char *dirname, uint8_t levels) {
     // Cria o objeto JSON raiz
     cJSON *rootJson = cJSON_CreateObject();
     cJSON *filesArray = cJSON_CreateArray();
@@ -168,7 +168,7 @@ cJSON *tosolve_myFS::listDir(const char *dirname, uint8_t levels) {
 
 /// @brief deletes files of path folder
 /// @param path caminho do arquivo ou diretório [deleta todos os arquivos]
-void tosolve_myFS::removeFile(const char *path) {
+void lib_fs::removeFile(const char *path) {
     // Verifica se o caminho fornecido é válido
     fs::File rootDir = openFile(path, path);
 
@@ -190,7 +190,7 @@ void tosolve_myFS::removeFile(const char *path) {
 
 /// @brief Lista arquivos do diretório
 /// @param path caminho do diretório
-cJSON *tosolve_myFS::listFiles(const char *path) { // Cria o objeto JSON
+cJSON *lib_fs::listFiles(const char *path) { // Cria o objeto JSON
     cJSON *root = cJSON_CreateObject();
     cJSON *files = cJSON_CreateArray();
     cJSON_AddItemToObject(root, "files", files);
@@ -214,7 +214,7 @@ cJSON *tosolve_myFS::listFiles(const char *path) { // Cria o objeto JSON
 /// @brief counts how many logs were saved
 /// @param path path to archives directory
 /// @return int, number of files
-int tosolve_myFS::numberOfFiles(const char *path) {
+int lib_fs::numberOfFiles(const char *path) {
     int num = 0;
 
     // Verifica se o caminho fornecido é válido
@@ -238,7 +238,7 @@ int tosolve_myFS::numberOfFiles(const char *path) {
 /// @param path caminho do diretório
 /// @param content texto string para ser gravado
 /// @param create indica se é um novo arquivo [default = false]
-bool tosolve_myFS::writeFile(const char *path, const char *content, bool create) {
+bool lib_fs::writeFile(const char *path, const char *content, bool create) {
     fs::File file = fs.open(path, "w", create);
     if (!file) {
         // SERIAL_OUT.println("- failed to open file for writing");
@@ -258,7 +258,7 @@ bool tosolve_myFS::writeFile(const char *path, const char *content, bool create)
 /// @attention Não abre nem fecha o arquivo 'file'
 /// @param file ponteiro para o arquivo
 /// @param message texto string para ser gravado
-bool tosolve_myFS::writeFile(File file, const char *message) {
+bool lib_fs::writeFile(File file, const char *message) {
     if (!file) {
         SERIAL_OUT.println("- failed to open file for writing");
         return false;
@@ -277,7 +277,7 @@ bool tosolve_myFS::writeFile(File file, const char *message) {
 /// @param filePath caminho do arquivo de retorno
 /// @param write modo de abertura [true - CREATE AND WRITE, false - ONLY READ]
 /// @param dirPath caminho do diretório que será criado
-File tosolve_myFS::openFile(const char *filePath, bool write, const char *dirPath) {
+File lib_fs::openFile(const char *filePath, bool write, const char *dirPath) {
     if (write) {
         if (strcmp(dirPath, "") != 0) createDir(dirPath);
         return fs.open(filePath, FILE_WRITE, true);
@@ -289,7 +289,7 @@ File tosolve_myFS::openFile(const char *filePath, bool write, const char *dirPat
 /// @brief Cria o diretório no caminho path
 /// @param path caminho do diretório
 /// @return retorna se true se a pasta foi criada ou se já existe
-bool tosolve_myFS::createDir(const char *path) {
+bool lib_fs::createDir(const char *path) {
     if (fs.exists(path)) {
         return true;
     }
@@ -305,20 +305,20 @@ bool tosolve_myFS::createDir(const char *path) {
 
 /// @brief Retorna a quantidade de bytes total na memória flash
 /// @warning Somente LittleFS
-uint tosolve_myFS::getTotalBytes() {
+uint lib_fs::getTotalBytes() {
     return LittleFS.totalBytes();
 }
 
 /// @brief Retorna a quantidade de bytes usados na memória flash
 /// @warning Somente LittleFS
-uint tosolve_myFS::getUsedBytes() {
+uint lib_fs::getUsedBytes() {
     return LittleFS.usedBytes();
 }
 
 /// @brief Retorna a quantidade de bytes livres na memória flash
 /// @warning Somente LittleFS
-uint tosolve_myFS::getFreeBytes() {
+uint lib_fs::getFreeBytes() {
     return (LittleFS.totalBytes() - LittleFS.usedBytes());
 }
 
-tosolve_myFS myFS;
+lib_fs myFS;

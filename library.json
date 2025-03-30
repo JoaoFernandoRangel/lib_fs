@@ -8,13 +8,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/2solve/firmware_lib-my-fs.git",
-    "ssh": "git@github.com:2solve/firmware_lib-my-fs.git"
+    "url": "https://github.com/JoaoFernandoRangel/lib_fs.git",
+    "ssh": "git@github.com:JoaoFernandoRangel/lib_fs.git"
   },
   "authors": [
     {
-      "name": "Mateus Gaudio",
-      "email": "mateus.gaudio@2solve.com",
+      "name": "João Fernando Rangel",
+      "email": "joaofrguimaraes1@gmail.com",
       "maintainer": true
     }
   ],
