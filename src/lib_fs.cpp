@@ -38,7 +38,7 @@ std::string lib_fs::readFile(const char *path, bool debug) {
 
     fs::File file = fs.open(path);
     if (!file || file.isDirectory()) {
-        SERIAL_OUT.println("\n- failed to open file for reading\n");
+        Serial.println("\n- failed to open file for reading\n");
         return fileContent;
     }
     while (file.available()) {
@@ -49,7 +49,7 @@ std::string lib_fs::readFile(const char *path, bool debug) {
     file.close();
 
     if (debug) {
-        SERIAL_OUT.println(fileContent.c_str());
+        Serial.println(fileContent.c_str());
     }
     return fileContent;
 }
@@ -61,7 +61,7 @@ std::string lib_fs::readFile(fs::File file, bool debug) {
     std::string fileContent = "";
 
     if (!file || file.isDirectory()) {
-        SERIAL_OUT.println("\n- failed to open file for reading\n");
+        Serial.println("\n- failed to open file for reading\n");
         return fileContent;
     }
     while (file.available()) {
@@ -70,7 +70,7 @@ std::string lib_fs::readFile(fs::File file, bool debug) {
     }
 
     if (debug) {
-        SERIAL_OUT.println(fileContent.c_str());
+        Serial.println(fileContent.c_str());
     }
     return fileContent;
 }
@@ -79,41 +79,41 @@ std::string lib_fs::readFile(fs::File file, bool debug) {
 /// @param dirname caminho do diretório
 /// @param levels quantidade de níveis que serão mostrados
 void lib_fs::printDir(const char *dirname, uint8_t levels) {
-    SERIAL_OUT.printf("Listing directory: %s\r\n", dirname);
+    Serial.printf("Listing directory: %s\r\n", dirname);
 
     fs::File root = fs.open(dirname);
     if (!root) {
-        SERIAL_OUT.println("- failed to open directory");
+        Serial.println("- failed to open directory");
         return;
     }
     if (!root.isDirectory()) {
-        SERIAL_OUT.println(" - not a directory");
+        Serial.println(" - not a directory");
         return;
     }
 
     fs::File file = root.openNextFile();
     while (file) {
         if (file.isDirectory()) {
-            SERIAL_OUT.print("  DIR : ");
+            Serial.print("  DIR : ");
 
-            SERIAL_OUT.print(file.name());
+            Serial.print(file.name());
             time_t t = file.getLastWrite();
             struct tm *tmstruct = localtime(&t);
-            SERIAL_OUT.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday,
+            Serial.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday,
                               tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
 
             if (levels) {
                 printDir(file.name(), levels - 1);
             }
         } else {
-            SERIAL_OUT.print("  FILE: ");
-            SERIAL_OUT.print(file.name());
-            SERIAL_OUT.print("  SIZE: ");
+            Serial.print("  FILE: ");
+            Serial.print(file.name());
+            Serial.print("  SIZE: ");
 
-            SERIAL_OUT.print(file.size());
+            Serial.print(file.size());
             time_t t = file.getLastWrite();
             struct tm *tmstruct = localtime(&t);
-            SERIAL_OUT.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday,
+            Serial.printf("  LAST WRITE: %d-%02d-%02d %02d:%02d:%02d\n", (tmstruct->tm_year) + 1900, (tmstruct->tm_mon) + 1, tmstruct->tm_mday,
                               tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
         }
         file = root.openNextFile();
@@ -133,11 +133,11 @@ cJSON *lib_fs::listDir(const char *dirname, uint8_t levels) {
 
     fs::File root = fs.open(dirname);
     if (!root) {
-        SERIAL_OUT.println("- failed to open directory");
+        Serial.println("- failed to open directory");
         return rootJson;
     }
     if (!root.isDirectory()) {
-        SERIAL_OUT.println(" - not a directory");
+        Serial.println(" - not a directory");
         return rootJson;
     }
 
@@ -241,14 +241,14 @@ int lib_fs::numberOfFiles(const char *path) {
 bool lib_fs::writeFile(const char *path, const char *content, bool create) {
     fs::File file = fs.open(path, "w", create);
     if (!file) {
-        // SERIAL_OUT.println("- failed to open file for writing");
+        // Serial.println("- failed to open file for writing");
         return false;
     }
     if (file.print(content)) {
-        // SERIAL_OUT.println("- file written");
+        // Serial.println("- file written");
         return true;
     } else {
-        // SERIAL_OUT.println("- write failed");
+        // Serial.println("- write failed");
         return false;
     }
     file.close();
@@ -260,14 +260,14 @@ bool lib_fs::writeFile(const char *path, const char *content, bool create) {
 /// @param message texto string para ser gravado
 bool lib_fs::writeFile(File file, const char *message) {
     if (!file) {
-        SERIAL_OUT.println("- failed to open file for writing");
+        Serial.println("- failed to open file for writing");
         return false;
     }
     if (file.print(message)) {
-        // SERIAL_OUT.println("- file written");
+        // Serial.println("- file written");
         return true;
     } else {
-        SERIAL_OUT.println("- write failed");
+        Serial.println("- write failed");
         return false;
     }
 }
@@ -295,10 +295,10 @@ bool lib_fs::createDir(const char *path) {
     }
 
     if (fs.mkdir(path)) {
-        SERIAL_OUT.printf("Dir created: %s\n", path);
+        Serial.printf("Dir created: %s\n", path);
         return true;
     } else {
-        SERIAL_OUT.println("mkdir failed");
+        Serial.println("mkdir failed");
         return false;
     }
 }
